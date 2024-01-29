@@ -42,7 +42,7 @@ paths:
          schema:
           $ref: "#/components/schemas/TaskDTO"
      400:
-      description: "BadRequest"
+      description: "Bad Request"
       content:
         application/json:
          schema:
