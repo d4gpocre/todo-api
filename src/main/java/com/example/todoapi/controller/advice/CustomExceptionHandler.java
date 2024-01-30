@@ -1,5 +1,6 @@
 package com.example.todoapi.controller.advice;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -37,5 +38,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
         return ResponseEntity.badRequest().body(new BadRequestError());
     }
 
-    
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<BadRequestError> handleDataIntegrityViolationException (
+            DataIntegrityViolationException ex
+    ) {
+        var error = BadRequestErrorCreator.from(ex);
+        return ResponseEntity.badRequest().body(error);
+    }
 }
