@@ -1,5 +1,6 @@
 package com.example.todoapi.controller.advice;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,14 +36,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
             HttpStatusCode status,
             WebRequest request
     ) {
-        return ResponseEntity.badRequest().body(new BadRequestError());
+        var error = BadRequestErrorCreator.from(ex);
+        return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<BadRequestError> handleDataIntegrityViolationException (
-            DataIntegrityViolationException ex
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<BadRequestError> handleConstraintViolationException (
+            ConstraintViolationException ex
     ) {
         var error = BadRequestErrorCreator.from(ex);
         return ResponseEntity.badRequest().body(error);
     }
+
 }

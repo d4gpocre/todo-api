@@ -1,13 +1,7 @@
 package com.example.todoapi.controller.task;
 
 import java.net.URI;
-import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import com.example.todoapi.model.PageDTO;
 import org.springframework.http.ResponseEntity;
