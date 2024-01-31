@@ -15,15 +15,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private final TaskRepository TaskRepository;
+    private final TaskRepository taskRepository;
 
     public TaskEntity find(long taskId) {
-        return TaskRepository.select(taskId)
+        return taskRepository.select(taskId)
         .map(record -> new TaskEntity(record.getId(), record.getTitle()))
         .orElseThrow(() -> new TaskEntityNotFoundException(taskId));
     }
     public List<TaskEntity> find(int limit,long offset) {
-       return TaskRepository.selectList(limit,offset)
+       return taskRepository.selectList(limit,offset)
         .stream()
         .map(record -> new TaskEntity(record.getId(), record.getTitle()))
         .collect(Collectors.toList());
@@ -31,7 +31,21 @@ public class TaskService {
 
     public TaskEntity create(String title) {
         var record = new TaskRecord(null,title);
-        TaskRepository.insert(record);
+        taskRepository.insert(record);
         return new TaskEntity(record.getId(),record.getTitle());
+    }
+
+    public TaskEntity update(Long taskId, String title) {
+        taskRepository.select(taskId)
+                        .orElseThrow(() -> new TaskEntityNotFoundException(taskId));
+        taskRepository.update(new TaskRecord(taskId,title));
+        return find(taskId);
+    }
+
+    public void delete(Long taskId) {
+        taskRepository.select(taskId)
+                .orElseThrow(() -> new TaskEntityNotFoundException(taskId));
+        taskRepository.delete(taskId);
+
     }
 }

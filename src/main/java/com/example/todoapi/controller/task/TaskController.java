@@ -25,18 +25,14 @@ public class TaskController  implements TasksApi{
     @Override
     public ResponseEntity<TaskDTO> showTask(Long taskId) {
         var entity = taskService.find(taskId);
-        var dto = new TaskDTO();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
+        var dto = toTaskDTO(entity);
         return ResponseEntity.ok(dto);
     }
 
     @Override
     public ResponseEntity<TaskDTO> createTask(TaskForm form){
         var entity = taskService.create(form.getTitle());
-        var dto = new TaskDTO();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
+        var dto =  toTaskDTO(entity);
 
         return ResponseEntity
         .created(URI.create("/tasks/" + dto.getId()))
@@ -47,8 +43,9 @@ public class TaskController  implements TasksApi{
     public ResponseEntity<TaskListDTO> listTasks(Integer limit,Long offset) {
         var entityList = taskService.find(limit,offset);
         var dtoList = entityList.stream()
-            .map(TaskController::getTaskDTO)
+            .map(TaskController::toTaskDTO)
             .collect(Collectors.toList());
+
         var dto = new TaskListDTO();
         var pageDTO = new PageDTO();
         pageDTO.setLimit(limit);
@@ -60,11 +57,24 @@ public class TaskController  implements TasksApi{
 
         return ResponseEntity.ok(dto);
     }
+    @Override
+    public ResponseEntity<TaskDTO> editTask(Long taskId, TaskForm taskForm) {
+        var entity = taskService.update(taskId,taskForm.getTitle());
+        var dto = toTaskDTO(entity);
+        return ResponseEntity.ok(dto);
+    }
 
-    private static TaskDTO getTaskDTO(TaskEntity taskEnttiy) {
+    @Override
+    public ResponseEntity<Void> deleteTask(Long taskId) {
+        taskService.delete(taskId);
+        return ResponseEntity.noContent().build();
+    }
+
+    private static TaskDTO toTaskDTO(TaskEntity taskEnttiy) {
         var taskDTO = new TaskDTO();
         taskDTO.setId(taskEnttiy.getId());
         taskDTO.setTitle(taskEnttiy.getTitle());
         return taskDTO;
     }
+
 }
